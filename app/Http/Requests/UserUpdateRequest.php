@@ -11,7 +11,7 @@ class UserUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,17 +23,7 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'name' => 'string|max:50',
-            'email' => 'string|email|max:255|unique:users',
-            'password' => [
-                'string',
-                'confirmed',
-                Password::min(8)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols()
-                    ->uncompromised(),
-            ],
+            'email' => 'string|email|max:255|unique:users'
         ];
     }
 }
