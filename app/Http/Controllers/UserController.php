@@ -60,7 +60,7 @@ class UserController extends Controller
         ];
         } catch (Throwable $e) {
             echo 'Catch Exception and Error exceptions';
-        }        
+        }
     }
 
     /**
@@ -84,14 +84,12 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, string $id)
     {
-        $data = $request->all();
-        $request->validate([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
-        $user = User::find($id);
-        $user->update($request->all());
+        $user = User::findOrFail($id);
+
+        $data = $request->validated();
+
+        $user->update($data);
+
         return [
             'status' => 200,
             'mensagem' => 'Usuário atualizado com sucesso!!',
@@ -104,8 +102,8 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = User::find($id);
-        $user->destroy();
+        $user = User::findOrFail($id);
+        $user->delete();
         return [
             'status' => 200,
             'mensagem' => 'Usuário removido com sucesso!!',
