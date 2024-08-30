@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserCreateRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -22,11 +23,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = User::select('id', 'name', 'email')->paginate('2');
+        $user = User::all();
 
         return [
             'status' => 200,
-            'menssagem' => 'Usuários encontrados!!',
+            'mensagem' => 'Usuários encontrados!!',
             'user' => $user
         ];
     }
@@ -44,6 +45,7 @@ class UserController extends Controller
      */
     public function store(UserCreateRequest $request)
     {
+       try {
         $data = $request->all();
 
         $user = User::create([
@@ -51,12 +53,14 @@ class UserController extends Controller
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
-
         return [
             'status' => 200,
-            'menssagem' => 'Usuário cadastrado com sucesso!!',
+            'mensagem' => 'Usuário cadastrado com sucesso!!',
             'user' => $user
         ];
+        } catch (Throwable $e) {
+            echo 'Catch Exception and Error exceptions';
+        }        
     }
 
     /**
@@ -78,9 +82,21 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserUpdateRequest $request, string $id)
     {
-        //
+        $data = $request->all();
+        $request->validate([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
+        $user = User::find($id);
+        $user->update($request->all());
+        return [
+            'status' => 200,
+            'mensagem' => 'Usuário atualizado com sucesso!!',
+            'user' => $user
+        ];
     }
 
     /**
@@ -88,6 +104,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+        $user->destroy();
+        return [
+            'status' => 200,
+            'mensagem' => 'Usuário removido com sucesso!!',
+        ];
     }
 }
